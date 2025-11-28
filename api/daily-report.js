@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import admin from "firebase-admin";
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-const RECIPIENTS = ["rohitkolisd@gmail.com", "kamal@appsobytes.com"];
+const RECIPIENTS = ["rohitkolisd@gmail.com", "kamalk@appsobytes.com"];
 
 if (!admin.apps.length) {
   admin.initializeApp({
