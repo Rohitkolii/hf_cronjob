@@ -95,21 +95,53 @@ Deploy to Vercel and the cron job will automatically run at the scheduled time.
 
 ## Troubleshooting
 
-### 404 NOT_FOUND Error
+### 404 NOT_FOUND Error After Deployment
 
-If you're getting a 404 error:
+If you're getting a 404 error on Vercel but it works locally:
 
-1. **Verify the route exists:** The file should be at `src/app/api/daily-report/route.js`
-2. **Check deployment:** Ensure the latest code is deployed to Vercel
-3. **Verify dependencies:** Make sure `next` is installed (`npm install`)
-4. **Check Vercel logs:** Go to your Vercel dashboard → Deployments → Function Logs
-5. **Test manually:** Try accessing the endpoint directly in your browser or via curl
-6. **Rebuild:** Sometimes a rebuild is needed after adding new routes - trigger a new deployment
+1. **Verify the route exists:** The file should be at `src/app/api/daily-report/route.js` ✓
+2. **Check Vercel Project Settings:**
+   - Go to Vercel Dashboard → Your Project → Settings → General
+   - Verify **Framework Preset** is set to **"Next.js"**
+   - Verify **Root Directory** is set correctly (usually just `/`)
+   - Verify **Build Command** is `next build` (or leave default)
+   - Verify **Output Directory** is `.next` (or leave default)
 
-### Route Path
+3. **Check Deployment:**
+   - Ensure the latest code is deployed to Vercel
+   - Go to Deployments tab and check build logs for errors
+   - Look for any warnings about API routes
 
-The route path in `vercel.json` must match the actual route:
-- Route file: `src/app/api/daily-report/route.js`
-- URL path: `/api/daily-report`
-- Vercel config: `"path": "/api/daily-report"` ✓
+4. **Verify Environment Variables:**
+   - Go to Vercel Dashboard → Settings → Environment Variables
+   - Ensure all required variables are set: `FIREBASE_ADMIN_KEY`, `EMAIL_USER`, `EMAIL_PASS`
+
+5. **Check Function Logs:**
+   - Go to Vercel Dashboard → Deployments → Select latest deployment → Functions tab
+   - Look for `/api/daily-report` in the functions list
+   - Check Runtime Logs for any errors
+
+6. **Test the endpoint manually:**
+   ```bash
+   curl https://your-domain.vercel.app/api/daily-report
+   ```
+
+7. **Force a fresh deployment:**
+   - In Vercel Dashboard, go to Deployments
+   - Click on the latest deployment → "..." menu → "Redeploy"
+   - Or push a new commit to trigger a rebuild
+
+8. **Verify route configuration:**
+   - Route file: `src/app/api/daily-report/route.js` ✓
+   - URL path: `/api/daily-report` ✓
+   - Vercel config: `"path": "/api/daily-report"` ✓
+   - Runtime: `nodejs` (configured in route file) ✓
+   - Both GET and POST handlers exported ✓
+
+### Important Notes
+
+- **No `pages` directory:** Make sure there's no `pages` directory in your project root, as it can conflict with App Router
+- **App Router structure:** The route uses Next.js App Router format (`src/app/api/...`)
+- **Runtime configuration:** The route has `export const runtime = 'nodejs'` for Vercel serverless functions
+- **Function timeout:** Configured to 60 seconds max duration in `vercel.json`
 
