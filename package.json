@@ -1,11 +1,7 @@
 {
   "name": "cron-job-service",
   "version": "1.0.0",
-  "main": "api/daily-report.js",
   "type": "module",
-  "scripts": {
-    "start": "vercel dev"
-  },
   "dependencies": {
     "exceljs": "^4.4.0",
     "firebase-admin": "^12.0.0",
