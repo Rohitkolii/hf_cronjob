@@ -34,16 +34,14 @@ export default async function handler(req, res) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        // user: process.env.EMAIL_USER,
-        user: "rk112koli@gmail.com",
-        pass: process.env.EMAIL_PASS,
-        pass: "ygzr rbzb ukry mheq"
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
       }
     });
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: ["rohitkolisd@gmail.com", "rk112koli@gmail.com"],
+      to: "rohitkolisd@gmail.com",
       subject: "Daily Firestore Report",
       text: "Attached is the daily report.",
       attachments: [
