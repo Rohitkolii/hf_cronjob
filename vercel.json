@@ -1,13 +1,13 @@
 {
+  "functions": {
+    "pages/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "crons": [
     {
       "path": "/api/daily-report",
-      "schedule": "45 23 * * *"
+      "schedule": "25 23 * * *"
     }
-  ],
-  "functions": {
-    "pages/api/**/*.js": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }
