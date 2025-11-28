@@ -4,11 +4,5 @@
       "path": "/api/daily-report",
       "schedule": "45 23 * * *"
     }
-  ],
-  "functions": {
-    "src/app/api/**/*.js": {
-      "maxDuration": 60,
-      "memory": 1024
-    }
-  }
+  ]
 }

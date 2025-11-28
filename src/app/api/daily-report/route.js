@@ -2,9 +2,10 @@ import ExcelJS from "exceljs";
 import nodemailer from "nodemailer";
 import admin from "firebase-admin";
 
-// Set runtime to nodejs for Vercel serverless functions
+// Route segment config for Vercel
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 const RECIPIENTS = ["rohitkolisd@gmail.com", "kamalk@appsobytes.com"];
