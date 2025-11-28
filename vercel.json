@@ -1,8 +1,8 @@
 {
-  "functions": {
-    "api/daily-report.js": {
-      "schedule": "@daily",
-      "runtime": "nodejs20.x"
+  "crons": [
+    {
+      "path": "/api/daily-report",
+      "schedule": "@daily"
     }
-  }
+  ]
 }
