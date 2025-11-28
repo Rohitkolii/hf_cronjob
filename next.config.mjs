@@ -10,7 +10,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  output: undefined,
 };
 
 export default nextConfig;
