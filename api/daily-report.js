@@ -102,7 +102,7 @@ const buildEmailSummary = (allRows, yesterdayRows, nowIst) => {
   }).format(nowIst);
 
   return [
-    "Hi team,",
+    "Hello,",
     "",
     `Daily enquiries snapshot as of ${dateString}:`,
     `• Total records: ${allRows.length}`,
@@ -156,7 +156,7 @@ export default async function handler(req, res) {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: RECIPIENTS,
-      subject: `Daily Firestore Enquiries Report | ${dateStamp}`,
+      subject: `Daily Stall Booking Enquiries Report | ${dateStamp}`,
       text: summary,
       attachments: [
         {
