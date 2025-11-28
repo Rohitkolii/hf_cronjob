@@ -115,7 +115,7 @@ const buildEmailSummary = (allRows, yesterdayRows, nowIst) => {
   ].join("\n");
 };
 
-export default async function handler(req, res) {
+export async function GET(request) {
   try {
     const db = admin.firestore();
     const snapshot = await db.collection("enquiries").get();
@@ -170,12 +170,12 @@ export default async function handler(req, res) {
       ]
     });
 
-    return res.status(200).json({
+    return Response.json({
       success: true, 
       message: "Daily report email dispatched"
-    });
+    }, { status: 200 });
   } catch (err) {
     console.error("daily-report error", err);
-    return res.status(500).json({ error: err.message });
+    return Response.json({ error: err.message }, { status: 500 });
   }
 }
