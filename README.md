@@ -12,15 +12,20 @@ This project runs a daily Vercel Scheduled Function that:
 
 **Endpoint:** `/api/daily-report`
 
-**Method:** GET
+**Methods:** GET or POST (both supported)
 
 **Description:** Generates daily enquiry reports from Firestore, creates Excel files, and sends them via email.
 
 **Cron Schedule:** Runs automatically at **10:30 PM IST** (5:00 PM UTC) daily
 
-**Manual Trigger:** You can manually trigger the endpoint by making a GET request to:
+**Manual Trigger:** You can manually trigger the endpoint by making a GET or POST request to:
 ```
 https://your-vercel-domain.vercel.app/api/daily-report
+```
+
+**Local Testing:**
+```bash
+curl http://localhost:3000/api/daily-report
 ```
 
 ## Folder Structure
@@ -65,12 +70,46 @@ Currently hardcoded in `route.js`:
 4. Sends email with both Excel files attached
 5. Email subject includes date stamp
 
+## Installation
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Set up environment variables (see Configuration section above)
+
+3. Run locally:
+```bash
+npm run dev
+```
+
 ## Deployment
 
 Deploy to Vercel and the cron job will automatically run at the scheduled time.
 
-To test locally, you can run:
-```bash
-curl http://localhost:3000/api/daily-report
-```
+**Important:** After deploying, make sure:
+- All environment variables are set in Vercel project settings
+- The deployment completed successfully
+- The cron job appears in Vercel dashboard under "Crons"
+
+## Troubleshooting
+
+### 404 NOT_FOUND Error
+
+If you're getting a 404 error:
+
+1. **Verify the route exists:** The file should be at `src/app/api/daily-report/route.js`
+2. **Check deployment:** Ensure the latest code is deployed to Vercel
+3. **Verify dependencies:** Make sure `next` is installed (`npm install`)
+4. **Check Vercel logs:** Go to your Vercel dashboard → Deployments → Function Logs
+5. **Test manually:** Try accessing the endpoint directly in your browser or via curl
+6. **Rebuild:** Sometimes a rebuild is needed after adding new routes - trigger a new deployment
+
+### Route Path
+
+The route path in `vercel.json` must match the actual route:
+- Route file: `src/app/api/daily-report/route.js`
+- URL path: `/api/daily-report`
+- Vercel config: `"path": "/api/daily-report"` ✓
 

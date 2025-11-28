@@ -115,65 +115,82 @@ const buildEmailSummary = (allRows, yesterdayRows, nowIst) => {
   ].join("\n");
 };
 
+async function sendDailyReport() {
+  const db = admin.firestore();
+  const snapshot = await db.collection("enquiries").get();
+
+  const { start, end } = getYesterdayIstRange();
+
+  const normalizedRows = snapshot.docs.map(doc => {
+    const data = doc.data();
+    const createdAt = toDate(data.createdAt);
+    const normalized = normalizeRecord({ id: doc.id, ...data });
+    if (createdAt) {
+      normalized.createdAt = createdAt.toISOString();
+    }
+    return {
+      normalized,
+      createdAtMs: createdAt ? createdAt.getTime() : null
+    };
+  });
+
+  const allRows = normalizedRows.map(entry => entry.normalized);
+  const yesterdayRows = normalizedRows
+    .filter(entry => {
+      if (!entry.createdAtMs) return false;
+      return entry.createdAtMs >= start && entry.createdAtMs <= end;
+    })
+    .map(entry => entry.normalized);
+
+  const nowIst = new Date(Date.now() + IST_OFFSET_MS);
+  const dateStamp = nowIst.toISOString().split("T")[0];
+
+  const [allBuffer, yesterdayBuffer] = await Promise.all([
+    buildWorkbookBuffer(allRows, "All Enquiries"),
+    buildWorkbookBuffer(yesterdayRows, "Yesterday Only")
+  ]);
+
+  const summary = buildEmailSummary(allRows, yesterdayRows, nowIst);
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: RECIPIENTS,
+    subject: `Daily Stall Booking Enquiries Report | ${dateStamp}`,
+    text: summary,
+    attachments: [
+      {
+        filename: `enquiries-all-${dateStamp}.xlsx`,
+        content: allBuffer
+      },
+      {
+        filename: `enquiries-yesterday-${dateStamp}.xlsx`,
+        content: yesterdayBuffer
+      }
+    ]
+  });
+
+  return {
+    success: true, 
+    message: "Daily report email dispatched"
+  };
+}
+
+// Handle GET requests (for manual testing)
 export async function GET(request) {
   try {
-    const db = admin.firestore();
-    const snapshot = await db.collection("enquiries").get();
+    const result = await sendDailyReport();
+    return Response.json(result, { status: 200 });
+  } catch (err) {
+    console.error("daily-report error", err);
+    return Response.json({ error: err.message }, { status: 500 });
+  }
+}
 
-    const { start, end } = getYesterdayIstRange();
-
-    const normalizedRows = snapshot.docs.map(doc => {
-      const data = doc.data();
-      const createdAt = toDate(data.createdAt);
-      const normalized = normalizeRecord({ id: doc.id, ...data });
-      if (createdAt) {
-        normalized.createdAt = createdAt.toISOString();
-      }
-      return {
-        normalized,
-        createdAtMs: createdAt ? createdAt.getTime() : null
-      };
-    });
-
-    const allRows = normalizedRows.map(entry => entry.normalized);
-    const yesterdayRows = normalizedRows
-      .filter(entry => {
-        if (!entry.createdAtMs) return false;
-        return entry.createdAtMs >= start && entry.createdAtMs <= end;
-      })
-      .map(entry => entry.normalized);
-
-    const nowIst = new Date(Date.now() + IST_OFFSET_MS);
-    const dateStamp = nowIst.toISOString().split("T")[0];
-
-    const [allBuffer, yesterdayBuffer] = await Promise.all([
-      buildWorkbookBuffer(allRows, "All Enquiries"),
-      buildWorkbookBuffer(yesterdayRows, "Yesterday Only")
-    ]);
-
-    const summary = buildEmailSummary(allRows, yesterdayRows, nowIst);
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: RECIPIENTS,
-      subject: `Daily Stall Booking Enquiries Report | ${dateStamp}`,
-      text: summary,
-      attachments: [
-        {
-          filename: `enquiries-all-${dateStamp}.xlsx`,
-          content: allBuffer
-        },
-        {
-          filename: `enquiries-yesterday-${dateStamp}.xlsx`,
-          content: yesterdayBuffer
-        }
-      ]
-    });
-
-    return Response.json({
-      success: true, 
-      message: "Daily report email dispatched"
-    }, { status: 200 });
+// Handle POST requests (for Vercel cron jobs)
+export async function POST(request) {
+  try {
+    const result = await sendDailyReport();
+    return Response.json(result, { status: 200 });
   } catch (err) {
     console.error("daily-report error", err);
     return Response.json({ error: err.message }, { status: 500 });
