@@ -1,10 +1,4 @@
 {
-  "functions": {
-    "pages/api/**/*.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 60
-    }
-  },
   "crons": [
     {
       "path": "/api/daily-report",
