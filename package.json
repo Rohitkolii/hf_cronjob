@@ -1,5 +1,5 @@
 {
-  "name": "cron-job-service",
+  "name": "cron-job-service-fair",
   "version": "1.0.0",
   "type": "module",
   "scripts": {

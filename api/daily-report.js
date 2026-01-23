@@ -101,7 +101,7 @@ const buildEmailSummary = (allRows, yesterdayRows, nowIst) => {
     timeZone: "Asia/Kolkata"
   }).format(nowIst);
 
-  return [
+  return [ 
     "Hello,",
     "",
     `Daily enquiries snapshot as of ${dateString}:`,
